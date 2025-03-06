@@ -24,11 +24,14 @@ RUN pecl install -o -f redis \
     &&  docker-php-ext-enable redis
 RUN docker-php-ext-install soap
 
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install node
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
+# Install Laravel
 RUN composer global require laravel/installer
 
 RUN export PATH="/root/.composer/vendor/bin:$PATH"

@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
@@ -12,14 +12,10 @@ export default defineConfig({
         }),
     ],
     server: {
+        host: "0.0.0.0",
         hmr: {
-            host: 'localhost',
-            port: 5173,
+            host: "localhost",
         },
-        host: '0.0.0.0',
-        port: 5173,
-        clientPort: 5173,
-        protocol: 'ws',
         watch: {
             usePolling: true,
         },
