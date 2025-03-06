@@ -1,4 +1,13 @@
+# IDE stuff
+**/.idea/
+**/.settings/
+**/.vscode/
+**/.idea_modules/
+**/.buildpath
+**/.project
+
 /vendor/
+project/vendor
 node_modules/
 npm-debug.log
 yarn-error.log
@@ -28,3 +37,10 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
+
+#*.env
+*.log
+*.vs*
+._*
+/src/nbproject/private/
+src/sftp-config.json
