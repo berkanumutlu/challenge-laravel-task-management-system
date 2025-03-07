@@ -33,6 +33,27 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Handle an incoming authentication api request.
+     */
+    public function store_api(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $user = Auth::user();
+        return response()->json([
+            'user'  => $user,
+            'token' => $user->createToken('auth-token')->plainTextToken,
+        ]);
+    }
+
+    /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
