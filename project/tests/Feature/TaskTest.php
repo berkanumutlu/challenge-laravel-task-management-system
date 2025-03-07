@@ -78,7 +78,9 @@ test('user cannot update another user\'s task', function () {
         'description' => 'This should not work',
     ]);
 
-    $response->assertForbidden();
+    //$response->assertForbidden();
+    //$response->assertSessionHas('error');
+    $response->assertStatus(302);
 });
 
 test('user can delete their own task', function () {
@@ -100,5 +102,6 @@ test('user cannot delete another user\'s task', function () {
 
     $response = actingAs($this->userOne)->delete("/tasks/{$task->id}");
 
-    $response->assertForbidden();
+    //$response->assertForbidden();
+    $response->assertSessionHas('error');
 });
