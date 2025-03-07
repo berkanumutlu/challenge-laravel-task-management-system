@@ -64,10 +64,10 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        $record = Task::findOrFail($id);
-        $this->authorize('update', $record);
-
         try {
+            $record = Task::findOrFail($id);
+            $this->authorize('update', $record);
+
             return view('task.edit', compact('record'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Task not found.')->exceptInput('_token');
@@ -79,15 +79,15 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $task = Task::findOrFail($id);
-        $this->authorize('update', $task);
-
         $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'status'      => 'required|in:pending,in_progress,completed'
         ]);
         try {
+            $task = Task::findOrFail($id);
+            $this->authorize('update', $task);
+
             Task::query()->where('id', $task->id)->update([
                 'title'       => $request->title,
                 'description' => $request->description,
@@ -104,11 +104,12 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        $task = Task::findOrFail($id);
-        $this->authorize('delete', $task);
-
         try {
+            $task = Task::findOrFail($id);
+            $this->authorize('delete', $task);
+
             $task->delete();
+
             return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred while deleting the task.');
@@ -119,6 +120,7 @@ class TaskController extends Controller
      * @param  Request  $request
      * @param  Task  $task
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function updateStatus(Request $request, Task $task): \Illuminate\Http\RedirectResponse
     {
@@ -139,6 +141,7 @@ class TaskController extends Controller
     /**
      * @param  Task  $task
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function complete(Task $task): \Illuminate\Http\RedirectResponse
     {
@@ -148,6 +151,7 @@ class TaskController extends Controller
     /**
      * @param  Task  $task
      * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function markInProgress(Task $task): \Illuminate\Http\RedirectResponse
     {
