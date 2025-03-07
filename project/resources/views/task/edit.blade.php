@@ -11,7 +11,7 @@
                 <x-errors :errors="$errors"></x-errors>
                 @if(empty($record))
                     <div class="p-4 bg-red-100 border-l-4 border-red-500 text-red-700" role="alert">
-                        <p>Record not found.</p>
+                        <p>{{ __('Record not found.') }}</p>
                     </div>
                 @else
                     <form action="{{ route('tasks.update', $record->id) }}" method="POST">

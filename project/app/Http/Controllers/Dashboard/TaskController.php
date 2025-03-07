@@ -109,4 +109,32 @@ class TaskController extends Controller
             return redirect()->back()->with('error', 'An error occurred while deleting the task.');
         }
     }
+
+    public function updateStatus(Request $request, Task $task)
+    {
+        if ($task->user_id !== auth()->id()) {
+            return redirect()->route('tasks.index')->with('error', 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,in_progress,completed'
+        ]);
+
+        try {
+            $task->update(['status' => $validated['status']]);
+            return redirect()->route('tasks.index')->with('success', 'Task status updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred while updating task status.');
+        }
+    }
+
+    public function complete(Task $task)
+    {
+        return $this->updateStatus(new Request(['status' => 'completed']), $task);
+    }
+
+    public function markInProgress(Task $task)
+    {
+        return $this->updateStatus(new Request(['status' => 'in_progress']), $task);
+    }
 }

@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('/tasks', TaskController::class);
+    Route::put('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
+    Route::put('/tasks/{task}/mark-in-progress', [TaskController::class, 'markInProgress'])
+        ->name('tasks.mark_in_progress');
 });
 
 require __DIR__.'/auth.php';
