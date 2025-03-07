@@ -64,8 +64,10 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
+        $record = Task::findOrFail($id);
+        $this->authorize('update', $record);
+
         try {
-            $record = Task::query()->where('user_id', auth()->id())->find($id);
             return view('task.edit', compact('record'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Task not found.')->exceptInput('_token');
@@ -77,14 +79,16 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $task = Task::findOrFail($id);
+        $this->authorize('update', $task);
+
         $request->validate([
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'status'      => 'required|in:pending,in_progress,completed'
         ]);
         try {
-            Task::query()->where('user_id', auth()->id())->findOrFail($id);
-            Task::query()->where('id', $id)->update([
+            Task::query()->where('id', $task->id)->update([
                 'title'       => $request->title,
                 'description' => $request->description,
                 'status'      => $request->status
@@ -100,21 +104,25 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        try {
-            $task = Task::where('user_id', auth()->id())->findOrFail($id);
-            $task->delete();
+        $task = Task::findOrFail($id);
+        $this->authorize('delete', $task);
 
+        try {
+            $task->delete();
             return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred while deleting the task.');
         }
     }
 
-    public function updateStatus(Request $request, Task $task)
+    /**
+     * @param  Request  $request
+     * @param  Task  $task
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateStatus(Request $request, Task $task): \Illuminate\Http\RedirectResponse
     {
-        if ($task->user_id !== auth()->id()) {
-            return redirect()->route('tasks.index')->with('error', 'Unauthorized action.');
-        }
+        $this->authorize('update', $task);
 
         $validated = $request->validate([
             'status' => 'required|in:pending,in_progress,completed'
@@ -128,12 +136,20 @@ class TaskController extends Controller
         }
     }
 
-    public function complete(Task $task)
+    /**
+     * @param  Task  $task
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function complete(Task $task): \Illuminate\Http\RedirectResponse
     {
         return $this->updateStatus(new Request(['status' => 'completed']), $task);
     }
 
-    public function markInProgress(Task $task)
+    /**
+     * @param  Task  $task
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function markInProgress(Task $task): \Illuminate\Http\RedirectResponse
     {
         return $this->updateStatus(new Request(['status' => 'in_progress']), $task);
     }
