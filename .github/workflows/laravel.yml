@@ -36,6 +36,9 @@ jobs:
       - name: Generate project APP_KEY
         working-directory: project
         run: php artisan key:generate
+      - name: Clear Laravel Cache
+        working-directory: project
+        run: php artisan optimize:clear
 
       - name: Set Directory Permissions
         working-directory: project
