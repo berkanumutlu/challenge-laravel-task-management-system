@@ -59,10 +59,9 @@ jobs:
           php artisan session:table
           php artisan migrate --env=testing --force
 
-      - name: Create Database file
-        run: |
-          mkdir -p database
-          touch database/database.sql
+      - name: Start Laravel Test Server
+        working-directory: project
+        run: php artisan serve --host=127.0.0.1 --port=8000 &
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
         working-directory: project
