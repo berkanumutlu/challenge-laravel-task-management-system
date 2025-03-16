@@ -36,16 +36,20 @@ jobs:
         working-directory: project
         run: chmod -R 777 storage bootstrap/cache
       - name: Start MySQL
-        run: sudo systemctl start mysql
+        run: |
+          docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=laravel_testing -p 3306:3306 -d mysql:8.0
+          sleep 15
       - name: Setup Database
         run: |
-          mysql -u root -e "CREATE DATABASE laravel_testing;"
+          mysql -u root -proot -h 127.0.0.1 -e "CREATE DATABASE IF NOT EXISTS laravel_testing;"
       - name: Generate APP_KEY for testing environment
         working-directory: project
         run: php artisan key:generate --env=testing
       - name: Run Migrations for Testing
         working-directory: project
-        run: php artisan migrate --env=testing --force
+        run: |
+          sleep 10
+          php artisan migrate --env=testing --force
       - name: Create Database
         run: |
           mkdir -p database
