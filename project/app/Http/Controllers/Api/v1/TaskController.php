@@ -52,7 +52,8 @@ class TaskController extends Controller
     public function show(Task $task): \Illuminate\Http\JsonResponse
     {
         try {
-            $this->authorizeAccess($task);
+            $this->authorize('view', $task);
+
             return response()->json(new TaskResource($task));
         } catch (ModelNotFoundException $e) {
             return response()->json(null, 204);
@@ -67,7 +68,7 @@ class TaskController extends Controller
     public function update(Request $request, Task $task): \Illuminate\Http\JsonResponse
     {
         try {
-            $this->authorizeAccess($task);
+            $this->authorize('update', $task);
 
             $validated = $request->validate([
                 'title'       => 'sometimes|string|max:255',
@@ -90,21 +91,13 @@ class TaskController extends Controller
     public function destroy(Task $task): \Illuminate\Http\JsonResponse
     {
         try {
-            $this->authorizeAccess($task);
+            $this->authorize('delete', $task);
+
             $task->delete();
+
             return response()->json(['message' => 'Task deleted']);
         } catch (Throwable $e) {
             return response()->json(['error' => 'Failed to delete task'], 500);
-        }
-    }
-
-    /**
-     * Check if the authenticated user owns the task.
-     */
-    private function authorizeAccess(Task $task)
-    {
-        if ($task->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
         }
     }
 }
